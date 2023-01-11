@@ -1,0 +1,5 @@
+formula,teste,mlp,randomForest,svm,xbr,K,E,C,Gamma
+alongamento,0,0.195,0.219,0.182,0.225,7,1.0,0,0
+alongamento,1,0.221,0.248,0.195,0.236,75,1.5,0,0
+alongamento,2,0.22,0.237,0.194,0.255,77,2.0,0,0
+alongamento,3,0.24,0.27,0.19,0.264,88,3.0,0,0
