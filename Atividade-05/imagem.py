@@ -44,11 +44,15 @@ class Imagem():
                 {'img': self.imgGray, 'title': f'Preto e Branco'},
                 color='gray')
     
-    def show(self, img=None):
+    def show(self, title="", img=None):
+        
         if img is None:
-            img = self.img
-        plt.imshow(img, cmap='gray')
-        plt.title(f'{img.shape}')
+            image = self.img
+        else:
+            image = img
+
+        plt.imshow(image, cmap='gray')
+        plt.title(f'{title}\n{image.shape}')
         plt.axis('off')
 
     # Função que apresenta várias imagens.
