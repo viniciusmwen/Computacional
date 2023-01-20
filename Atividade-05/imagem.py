@@ -44,7 +44,7 @@ class Imagem():
                 {'img': self.imgGray, 'title': f'Preto e Branco'},
                 color='gray')
     
-    def show(self, title="", img=None):
+    def show(self, img=None, title=""):
         
         if img is None:
             image = self.img
