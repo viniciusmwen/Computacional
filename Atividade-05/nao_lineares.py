@@ -13,7 +13,11 @@ def mediana(img, kernel):
     # retorna a mediana dos valores que estão no kernel
     # Aplicar filtro mediana
     #resultado = pd.DataFrame(kernel).median()
-    resultado = statistics.median(kernel)
+    """ if kernel[0] > 0 and kernel[0] < 1.0:
+        resultado = pd.DataFrame(kernel).median()
+    else:
+        resultado = statistics.median(kernel) """
+    resultado = np.median(kernel)
     return resultado
 
 def moda(img, kernel):
@@ -62,7 +66,11 @@ def escolheFiltro(img, filtro, kernel, i, j):
 
 def applyColor(img, filtro, kernel):
     # Aplicar filtro
-    imgFiltrada = np.zeros(img.shape, np.uint8)
+    if img.dtype == np.uint8:
+        imgFiltrada = np.zeros(img.shape, dtype=np.uint8)
+    else:
+        imgFiltrada = img.copy().astype(np.float32)
+
     for i in tqdm(range(1, img.shape[0]-1), desc=f"{filtro} - {kernel}"):
         for j in range(1, img.shape[1]-1):
             for k in range(3):
@@ -74,11 +82,15 @@ def applyColor(img, filtro, kernel):
 # function to apply the filter solved the problem: "setting an array element with a sequence".
 def applyFilter(img, filtro, kernel):
     # Aplicar filtro
-    imgFiltrada = np.zeros(img.shape, np.uint8)
+    if img.dtype == np.uint8:
+        imgFiltrada = np.zeros(img.shape, dtype=np.uint8)
+    else:
+        imgFiltrada = img.copy().astype(np.float32)
+
     if len(img.shape) < 3:
         for i in tqdm(range(1, img.shape[0]-1), desc=f"{filtro} - {kernel}"):
             for j in range(1, img.shape[1]-1):
-                imgFiltrada[i,j] = escolheFiltro(img, filtro, kernel, i, j)
+                imgFiltrada[i,j] = escolheFiltro(img.astype(np.float32), filtro, kernel, i, j)
     else:
         imgFiltrada = applyColor(img, filtro, kernel)
 
