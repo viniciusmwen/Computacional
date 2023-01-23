@@ -1,59 +1,85 @@
-import numpy as np
-from tqdm import tqdm
-import statistics
-from scipy import stats as st
-from collections import Counter
+## Fazer as funções de aplicar filtros não lineares: mediana, moda, maximo e minimo
+## Em uma imagem onde o tamanho do quadro (kernel) é repassado
+## Como parâmetro. O tamanho do quadro deve ser ímpar.
 
-def janela_noLinear(img, l, a, largura, altura, m, n):
+import cv2
+import numpy as np
+import matplotlib.pyplot as plt
+import statistics
+import pandas as pd
+from tqdm import tqdm
+
+def mediana(img, kernel):
+    # retorna a mediana dos valores que estão no kernel
+    # Aplicar filtro mediana
+    #resultado = pd.DataFrame(kernel).median()
+    resultado = statistics.median(kernel)
+    return resultado
+
+def moda(img, kernel):
+    # Aplicar filtro moda
+    resultado = statistics.mode(kernel)
+    return resultado
+
+def maximo(img, kernel):
+    # Aplicar filtro maximo
+    #resultado = pd.DataFrame(kernel).max()[0]
+    resultado = max(kernel)
+    return resultado
+
+def minimo(img, kernel):
+    # Aplicar filtro minimo
+    #resultado = pd.DataFrame(kernel).min()[0]
+    resultado = min(kernel)
+    return resultado
+
+def montaJanela(img, t1, t2, i, j):
+    # Montar janela
     janela = []
-    for i in range(l-(m//2), l+(m//2)+1): 
-        for j in range(a-(n//2), a+(n//2)+1):
-            if (i > -1 and j > -1) and (i < largura and j < altura):
-                janela.append(img[i][j])
+    cont = 0
+    for l in range(i-(t1//2), i+(t2//2)+1):
+        for c in range(j-(t1//2), j+(t2//2)+1):
+            if l > 0 and l < img.shape[0]-1 and c > 0 and c < img.shape[1]-1:
+                #janela[cont] = img[l,c]
+                janela.append(img[l,c])
     return janela
 
-""" 
-    a.Mediana
-    b.Mode
-    c.Máximo
-    d.Mínimo
-"""
+def escolheFiltro(img, filtro, kernel, i, j):
+    resultado = None
+    janela = montaJanela(img, int(kernel[0]), int(kernel[1]), i, j)
 
-def moda(janela):
-    c = Counter(janela)
-    return [k for k, v in c.items() if v == c.most_common(1)[0][1]]
+    if filtro == 'mediana':
+        resultado = mediana(img, janela)
+    elif filtro == 'moda':
+        resultado = moda(img, janela)
+    elif filtro == 'maximo':
+        resultado = maximo(img, janela)
+    elif filtro == 'minimo':
+        resultado = minimo(img, janela)
+
+    return resultado
 
 
-def escolheFiltro(filtro, janela):
-    if filtro == 'a':
-        return np.median(janela)
-    elif filtro == 'b':
-        # calcule the mode
-        return moda(janela)[0]
-    elif filtro == 'c':
-        return np.max(janela)
-    elif filtro == 'd':
-        return np.min(janela)
+def applyColor(img, filtro, kernel):
+    # Aplicar filtro
+    imgFiltrada = np.zeros(img.shape, np.uint8)
+    for i in tqdm(range(1, img.shape[0]-1), desc=f"{filtro} - {kernel}"):
+        for j in range(1, img.shape[1]-1):
+            for k in range(3):
+                imgFiltrada[i,j,k] = escolheFiltro(img[:,:,k], filtro, kernel, i, j)
 
-def aplica(img, m, n, filtro):
-    largura, altura = img.shape
-    img2 = img
-    for l in tqdm(range(largura)):
-        for a in range(altura):
-            janela = janela_noLinear(img2, l, a, largura, altura, m, n)
-            img2[l][a] = escolheFiltro(filtro, janela)
-    return img2
+    return imgFiltrada
 
-def noLinear_colorido(img, m, n, filtro):
-    img2 = img
-    for c in range(3):
-        img2[:,:,c] = aplica(img2[:,:,c], m, n, filtro)
-    return img2
 
-def nao_linear(img, m, n, filtro):
-    img = img
-    if len(img.shape) == 3:
-        img2 = noLinear_colorido(img, m, n, filtro)
+# function to apply the filter solved the problem: "setting an array element with a sequence".
+def applyFilter(img, filtro, kernel):
+    # Aplicar filtro
+    imgFiltrada = np.zeros(img.shape, np.uint8)
+    if len(img.shape) < 3:
+        for i in tqdm(range(1, img.shape[0]-1), desc=f"{filtro} - {kernel}"):
+            for j in range(1, img.shape[1]-1):
+                imgFiltrada[i,j] = escolheFiltro(img, filtro, kernel, i, j)
     else:
-        img2 = aplica(img, m, n, filtro)
-    return img2
+        imgFiltrada = applyColor(img, filtro, kernel)
+
+    return imgFiltrada
