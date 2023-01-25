@@ -95,3 +95,4 @@ def applyFilter(img, filtro, kernel):
         imgFiltrada = applyColor(img, filtro, kernel)
 
     return imgFiltrada
+

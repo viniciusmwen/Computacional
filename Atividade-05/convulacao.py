@@ -107,7 +107,7 @@ def convCinza(imagem, filtro, borda):
 	else:
 		for I in range(altura):
 			for J in range(largura):
-				resultados.append(janela(imagem,filtro,borda,I,J,largura,altura)
+				resultados.append(janela(imagem,filtro,borda,I,J,largura,altura))
 
 def verificaFiltro(filtro, imagem):
     r = False

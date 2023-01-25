@@ -134,6 +134,7 @@ def janelareplicada(imagem,i,j,m,n,t):
     return janela
 
 def janelaespelhada(imagem,i,j,m,n,t):
+    Imagem = imagem.copy()
     if t == -1:
         altura, largura = imagem.shape
     else:
@@ -158,14 +159,13 @@ def janelaespelhada(imagem,i,j,m,n,t):
         new_a += 1 
     janela = list(quebralista(janela,n))
     janela = np.array(janela)
-    print(janela)
     return janela
 
 def imagemrgb(imagem,filtro,borda='ignore'):
     altura, largura, dimensao = imagem.shape
     resultados = []
-    Imagem = np.interp(imagem, (imagem.min(), imagem.max()), (0, 1))
-    imagem_nova = np.zeros((altura,largura,3),'uint8')
+    Imagem = imagem.copy()
+    imagem_nova = imagem.copy()
     if borda != 'ignore':
         for I in range(altura):
                 for J in range(largura):
@@ -285,8 +285,6 @@ def convolucao(imagem,filtro,borda='ignore'):
     else: 
         imagem_processada = imagemgray(imagem,filtro,borda)
     return imagem_processada
-
-
 
 
 # ------------------------ MAIN ------------------------ #
