@@ -164,6 +164,7 @@ def janelaespelhada(imagem,i,j,m,n,t):
 def imagemrgb(imagem,filtro,borda='ignore'):
     altura, largura, dimensao = imagem.shape
     resultados = []
+    Imagem = np.interp(imagem, (imagem.min(), imagem.max()), (0, 1))
     imagem_nova = np.zeros((altura,largura,3),'uint8')
     if borda != 'ignore':
         for I in range(altura):
@@ -204,6 +205,7 @@ def imagemrgb(imagem,filtro,borda='ignore'):
 def imagemgray(imagem,filtro,borda='ignore'):
     altura, largura = imagem.shape
     resultados = []
+    imagem_nova = imagem.copy()
     # ignore
     if borda == 'ignore':
         a = int((filtro['M']-1)/2)
@@ -289,7 +291,7 @@ def convolucao(imagem,filtro,borda='ignore'):
 
 # ------------------------ MAIN ------------------------ #
 
-Imagem = imread('Imagem.jpg')
+""" Imagem = imread('Imagem.jpg')
 Imagem = rgb2gray(Imagem)
 imagem_nova = imread('Imagem-01.jpg')
 imagem_nova = rgb2gray(imagem_nova)
@@ -315,4 +317,4 @@ x = convolucao(Imagem,filtroLaplaciano,'ignore')
 imshow(Imagem+imagem_nova)
 
 
-imsave('Nova.jpg',imagem_nova)
+imsave('Nova.jpg',imagem_nova) """

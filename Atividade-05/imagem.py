@@ -25,9 +25,14 @@ class Imagem():
         self.img = imread(self.name)
         self.imgRed = resize(self.img, (self.largura, self.altura))
         self.imgGray = rgb2gray(self.imgRed)
+    
+    def lerCV2(self):
+        self.img = cv2.imread(self.name)
+        self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2RGB) 
+        self.imgRed = cv2.resize(self.img, (240, 240))
+        self.imgGray = cv2.cvtColor(self.imgRed, cv2.COLOR_RGB2GRAY)
 
     def shows(self, qnt=2):
-
         if qnt == 0:
             self.show(self.img)
 
