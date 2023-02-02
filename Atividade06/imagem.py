@@ -26,13 +26,17 @@ class Imagem():
         # Ler a imagem como um array flutuante
         self.img = imread(self.name)
         self.imgRed = resize(self.img, (self.largura, self.altura))
-        self.imgGray = rgb2gray(self.imgRed)
+        
+        if len(self.imgRed.shape) == 3:
+            self.imgGray = rgb2gray(self.imgRed)
 
-        self.dimensoes = {
-            0: self.img[:,:,0],
-            1: self.img[:,:,1],
-            2: self.img[:,:,2]
-        }
+            self.dimensoes = {
+                0: self.img[:,:,0],
+                1: self.img[:,:,1],
+                2: self.img[:,:,2]
+            }
+        else:
+            self.dimensoes = {0: self.img}
     
     # Ler a imagem, imagem redimensionada e imagem em tons de cinza.
     def lerCV2(self):
