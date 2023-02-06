@@ -20,6 +20,7 @@ class Imagem():
         self.altura = 240
         self.largura = 240
         self.dimensoes = None
+        self.img_redimensionadapt = None # Imagem redimensionada
     
     # Ler a imagem, imagem redimensionada e imagem em tons de cinza.
     def ler(self):
@@ -90,6 +91,10 @@ class Imagem():
             i.set_title(f'{imgs[index]["title"]} \n {imgs[index]["img"].shape}')
             i.axis('off')
 
+    def redimensionar(self, porcentagem=0.8):
+        altura, largura = self.dimensoes[0].shape
+        novaAltura, novaLargura = int(altura*porcentagem), int(largura*porcentagem)
+        self.img_redimensionada = resize(self.dimensoes[0], (novaAltura,novaLargura), anti_aliasing=True)
 
 
 
