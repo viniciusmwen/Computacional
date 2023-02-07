@@ -20,6 +20,7 @@ class Imagem():
         self.altura = 240
         self.largura = 240
         self.dimensoes = None
+        self.imgs = []
         self.img_redimensionadapt = None # Imagem redimensionada
     
     # Ler a imagem, imagem redimensionada e imagem em tons de cinza.
@@ -96,5 +97,16 @@ class Imagem():
         novaAltura, novaLargura = int(altura*porcentagem), int(largura*porcentagem)
         self.img_redimensionada = resize(self.dimensoes[0], (novaAltura,novaLargura), anti_aliasing=True)
 
-
+    def abrirVarios(self, *caminhos):
+        for caminho in caminhos:
+            self.imgs.append(imread(caminho))
+    
+    def mostraIMGS(self, title=None):
+        if len(title) != len(self.imgs):
+            print('Quantidade de titulos diferente da quantidade de imagens.')
+            return
+        r = []
+        for i in range(len(self.imgs)):
+            r.append({'img': self.imgs[i], 'title': title[i]})
+        self.manyShowWithTitle(*r)
 
