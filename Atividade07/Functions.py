@@ -7,6 +7,7 @@ import os
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from skimage.filters.thresholding import threshold_otsu
+import glob
 
 # Função para obter os caminhos de arquivos de uma pasta específica.
 def caminhos_dataset(base='./Imagens/DSFlowersV1/'):
@@ -89,6 +90,9 @@ def montaPasta(tipo,nome):
     # print( dir,nomeFlower)
     return dir,nomeFlower
 
+def pegaData(c):
+    return sorted(glob(f'{c}/*', recursive=True))
+
 # Alargamento-01.png com k=10 e E=1.0
 # Alargamento-02.png com k=30 e E=2.0
 # Alargamento-03.png com k=30 e E=3.0
@@ -99,4 +103,4 @@ def montaPasta(tipo,nome):
 # print(histograma(imagemCinza))
 # caminhos_dataset()
 # aplicaKMeans('MimeJr.png')
-montaPasta('alargamento71','daisy/daisy-089.jpg')
+# montaPasta('alargamento71','daisy/daisy-089.jpg')
