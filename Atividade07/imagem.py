@@ -9,6 +9,9 @@ import csv
 from tqdm import tqdm
 from skimage.transform import resize
 import seaborn as sns
+from skimage.exposure import equalize_hist
+from skimage.filters.thresholding import threshold_otsu
+from skimage.filters import median
 
 class Imagem():
 
@@ -21,6 +24,7 @@ class Imagem():
         self.altura = 240
         self.largura = 240
         self.dimensoes = None
+        self.filtros = {}
         self.imgs = []
         self.img_redimensionadapt = None # Imagem redimensionada
     
@@ -34,9 +38,9 @@ class Imagem():
             self.imgGray = rgb2gray(self.imgRed)
 
             self.dimensoes = {
-                0: self.img[:,:,0],
-                1: self.img[:,:,1],
-                2: self.img[:,:,2]
+                0: self.imgRed[:,:,0],
+                1: self.imgRed[:,:,1],
+                2: self.imgRed[:,:,2]
             }
         else:
             self.dimensoes = {0: self.img}
@@ -47,24 +51,57 @@ class Imagem():
         self.img = cv2.imread(self.name)
         self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2RGB) 
         self.imgRed = cv2.resize(self.img, (240, 240))
-        self.imgGray = cv2.cvtColor(self.imgRed, cv2.COLOR_RGB2GRAY)
+        
+        if len(self.imgRed.shape) == 3:
+            self.imgGray = cv2.cvtColor(self.imgRed, cv2.COLOR_RGB2GRAY)
+            self.dimensoes = {
+                0: self.imgRed[:,:,0],
+                1: self.imgRed[:,:,1],
+                2: self.imgRed[:,:,2]
+            }
+        else:
+            self.dimensoes = {0: self.img}
 
     # Função que apresenta as imagens.
-    def shows(self, qnt=2):
-        if qnt == 0:
+    def shows(self, modo=0):
+        if modo == 0:
             self.show(self.img)
-        elif qnt == 1:
+        elif modo == 1:
             self.manyShowWithTitle(
                 {'img': self.img, 'title': f'Tamanho original'},
                 {'img': self.imgRed, 'title': f'Tamanho padronizado'},
                 color='gray')
-        elif qnt == 2:
+        elif modo == 2:
+            self.manyShowWithTitle(
+                {'img': self.img, 'title': f'Tamanho original'},
+                {'img': self.imgGray, 'title': f'Preto e Branco'},
+                color='gray')
+
+        elif modo == 3:
             self.manyShowWithTitle(
                 {'img': self.img, 'title': f'Tamanho original'},
                 {'img': self.imgRed, 'title': f'Tamanho padronizado'},
                 {'img': self.imgGray, 'title': f'Preto e Branco'},
                 color='gray')
-    
+        
+        elif modo == 4:
+            self.manyShowWithTitle(
+                {'img': self.imgRed, 'title': f'OriginalTamanho padronizado'},
+                {'img': self.dimensoes[0], 'title': f'Canal Vermelho'},
+                {'img': self.dimensoes[1], 'title': f'Canal Verde'},
+                {'img': self.dimensoes[2], 'title': f'Canal Azul'},
+                color='gray')
+        
+        elif modo == 5:
+            self.manyShowWithTitle(
+                {'img': self.imgRed, 'title': f'Original'},
+                {'img': self.filtros['eq'], 'title': f'Equalizada'},
+                {'img': self.filtros['median'], 'title': f'Median'},
+                {'img': self.dimensoes[0], 'title': f'Canal Vermelho'},
+                {'img': self.dimensoes[1], 'title': f'Canal Verde'},
+                {'img': self.dimensoes[2], 'title': f'Canal Azul'},
+                color='gray')
+        
     # Função que apresenta uma imagem.
     def show(self, img=None, title=""):
         
@@ -77,6 +114,18 @@ class Imagem():
         plt.title(f'{title}\n{image.shape}')
         plt.axis('off')
 
+    def defineLinhasColunas(self, imgs, linhas, colunas):
+        if linhas == None or colunas == None:
+            print(len(imgs))
+            if len(imgs) > 4:
+                colunas = 4
+                linhas = len(imgs)//4+1
+            else:
+                colunas = len(imgs)
+                linhas = 1
+        
+        return linhas, colunas
+
     # Função que apresenta várias imagens.
     def manyShow(self, *imgs, color='gray'):
         _, ax = plt.subplots(1, len(imgs), figsize=(20, 20),sharex=True)
@@ -87,7 +136,7 @@ class Imagem():
 
     # Função que apresenta várias imagens com títulos.
     def manyShowWithTitle(self, *imgs, color='gray'):
-        _, ax = plt.subplots(1, len(imgs), figsize=(20, 20),sharex=True)
+        _, ax = plt.subplots(1, len(imgs), figsize=(20, 20), sharex=True)
         for index, i in enumerate(ax):
             i.imshow(imgs[index]['img'], cmap=color)
             i.set_title(f'{imgs[index]["title"]} \n {imgs[index]["img"].shape}')
@@ -116,3 +165,48 @@ class Imagem():
         plt.title(f'{xlabel} x {ylabel}')
         plt.show()
 
+    def equalize(self, img=None):
+
+        if img == None:
+            img = self.imgRed
+
+        img_eq = np.zeros_like(img)
+        for d in range(img.shape[2]):
+            img_eq[:,:,d] = equalize_hist(img[:,:,d])
+        return img_eq
+
+    def normalize(self, imagem=None):
+        if imagem == None:
+            imagem = self.imgRed
+
+        copia = imagem.copy()
+        copia = copia / 255
+        copia = copia[:,:,0] + copia[:,:,1] + copia[:,:,2]
+
+        return copia
+
+        
+
+    def otsu(self, imagem=None):
+
+        if imagem == None:
+            imagem = self.normalize(self.filtros['median'])
+        
+        limiar = threshold_otsu(imagem)
+        return imagem > limiar
+
+    def inteiro(self, imagem=None):
+        if imagem == None:
+            imagem = self.imgRed
+
+        copia = imagem.copy()
+        copia = copia * 255
+        copia = copia.astype(np.uint8)
+
+        return copia
+
+    def salvar(self, imgs, originais, caminho):
+        for i, img in enumerate(imgs):
+            nome = originais[i].split('/')[-2] + '/' + originais[i].split('/')[-1]
+            imsave(f'{caminho}/{nome}', img)
+            

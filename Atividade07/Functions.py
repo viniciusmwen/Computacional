@@ -7,7 +7,7 @@ import os
 import matplotlib.pyplot as plt
 from sklearn.cluster import KMeans
 from skimage.filters.thresholding import threshold_otsu
-import glob
+from glob import glob
 
 # Função para obter os caminhos de arquivos de uma pasta específica.
 def caminhos_dataset(base='./Imagens/DSFlowersV1/'):
