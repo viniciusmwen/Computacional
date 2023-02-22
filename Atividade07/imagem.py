@@ -208,5 +208,6 @@ class Imagem():
     def salvar(self, imgs, originais, caminho):
         for i, img in enumerate(imgs):
             nome = originais[i].split('/')[-2] + '/' + originais[i].split('/')[-1]
-            imsave(f'{caminho}/{nome}', img)
+            #imsave(f'{caminho}/{nome}', img)
+            plt.imsave(f'{caminho}/{nome}', img)
             
